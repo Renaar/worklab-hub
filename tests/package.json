@@ -1,0 +1,11 @@
+{
+  "name": "worklab-tests",
+  "private": true,
+  "description": "Tests de bout en bout du worklab (hors des images de production)",
+  "scripts": {
+    "test": "node dactylo.test.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
