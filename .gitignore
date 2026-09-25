@@ -1,0 +1,11 @@
+# Secrets locaux
+.env
+
+# Dépôts des apps, clonés par scripts/deploy.sh
+/sources/
+
+# Fichiers préparés pour l'image du hub par scripts/deploy.sh
+/hub/build/
+
+# Outils de test
+/tests/node_modules/

@@ -1,0 +1,2 @@
+# Seuls nginx.conf, erreurs/ et build/site/ sont copiés dans l'image
+site/

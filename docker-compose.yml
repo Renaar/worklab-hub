@@ -1,0 +1,64 @@
+# Stack du worklab : un seul point d'entrée (le hub) et les apps à conteneur.
+# Ne pas lancer directement : scripts/deploy.sh prépare d'abord sources/ et
+# hub/build/, puis appelle « docker compose up ».
+
+# Nom fixe : le volume s'appelle toujours worklab-hub_dactylo-data,
+# quel que soit le nom du dossier.
+name: worklab-hub
+
+# Rotation des logs, commune à tous les services (3 × 10 Mo au maximum)
+x-logs: &logs
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  hub:
+    build: ./hub
+    # Le seul port publié de la stack. Attention : Docker contourne ufw,
+    # un port publié est ouvert au réseau quelles que soient les règles ufw.
+    ports:
+      - "${HUB_PORT:-80}:80"
+    environment:
+      TZ: Europe/Zurich
+    restart: unless-stopped
+    # Pas de depends_on : le hub démarre et sert les apps statiques même si
+    # turbo-dactylo est arrêté (voir « resolver » dans hub/nginx.conf).
+    healthcheck:
+      # 127.0.0.1 plutôt que localhost : localhost peut désigner l'IPv6 (::1),
+      # sur laquelle nginx n'écoute pas.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging: *logs
+
+  turbo-dactylo:
+    # Construit avec le Dockerfile du dépôt Turbo-Dactylo (cloné par deploy.sh)
+    build: ./sources/turbo-dactylo
+    # Aucun port publié : seul le hub le joint, par le réseau interne.
+    environment:
+      TZ: Europe/Zurich
+      TURBO_PIN: ${TURBO_PIN:?TURBO_PIN manque dans .env}
+      TURBO_DATA_DIR: /app/data
+    volumes:
+      - dactylo-data:/app/data
+      # L'image node:alpine n'a pas les fuseaux horaires : on prête ceux du
+      # serveur (lecture seule) pour que TZ=Europe/Zurich soit compris.
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    restart: unless-stopped
+    healthcheck:
+      # En Node (fetch intégré) : aucun outil à ajouter à l'image
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/classements').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging: *logs
+
+volumes:
+  # Résultats des courses (resultats.ndjson). Survit aux rebuilds et à
+  # « docker compose down ». Sauvegarde : scripts/sauvegarde-dactylo.sh
+  dactylo-data:

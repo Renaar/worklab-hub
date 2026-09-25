@@ -1,0 +1,144 @@
+<!doctype html>
+<!--
+  Modèle de la page d'accueil du hub.
+  deploy.sh remplace la ligne « APPS » ci-dessous par une carte par app de
+  apps.conf (titre, description, icône de hub/site/icones/<id>.svg). Ne pas
+  écrire la liste des apps ici : elle serait en double.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worklab</title>
+<meta name="description" content="Les apps de la classe, hébergées au collège.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232458d6'/><path d='M7 10l3.5 12L16 12l5.5 10L25 10' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  /* Couleurs claires par défaut, sombres si le poste est réglé ainsi */
+  :root {
+    color-scheme: light dark;
+    --fond: #f6f7f9;
+    --carte: #ffffff;
+    --bord: #dde1e8;
+    --texte: #1d2433;
+    --doux: #5b6475;
+    --ombre: 0 1px 2px rgb(20 30 50 / .06), 0 4px 16px rgb(20 30 50 / .06);
+    --a1: #2458d6; --a1-fond: #e7eefc;
+    --a2: #c2410c; --a2-fond: #fdeee5;
+    --a3: #0f7a55; --a3-fond: #e3f4ec;
+    --a4: #7c3aed; --a4-fond: #f0e9fd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fond: #151a23;
+      --carte: #1e2531;
+      --bord: #2f3847;
+      --texte: #e8ebf1;
+      --doux: #a3abbb;
+      --ombre: none;
+      --a1: #7aa2ff; --a1-fond: #22325a;
+      --a2: #fb923c; --a2-fond: #4a2a18;
+      --a3: #4ade9f; --a3-fond: #173d2f;
+      --a4: #b794ff; --a4-fond: #33265a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--fond);
+    color: var(--texte);
+    /* Plex si elle est installée sur le poste, sinon la police du système.
+       Rien n'est chargé depuis Internet. */
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    line-height: 1.4;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(24px, 6vw, 72px) 16px 48px;
+  }
+  header { margin-bottom: clamp(24px, 4vw, 48px); }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    margin: .25rem 0 0;
+    color: var(--doux);
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+  }
+
+  /* Cartes : une colonne sur téléphone, 2 ou 3 sur PC et beamer */
+  .apps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: clamp(16px, 2.5vw, 28px);
+  }
+  .carte {
+    --accent: var(--a1);
+    --accent-fond: var(--a1-fond);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    padding: clamp(20px, 2.5vw, 32px);
+    background: var(--carte);
+    border: 1px solid var(--bord);
+    border-radius: 16px;
+    box-shadow: var(--ombre);
+    color: inherit;
+    text-decoration: none;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .apps li:nth-child(4n+2) .carte { --accent: var(--a2); --accent-fond: var(--a2-fond); }
+  .apps li:nth-child(4n+3) .carte { --accent: var(--a3); --accent-fond: var(--a3-fond); }
+  .apps li:nth-child(4n+4) .carte { --accent: var(--a4); --accent-fond: var(--a4-fond); }
+  .carte:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .carte:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .icone {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+    background: var(--accent-fond);
+    color: var(--accent);
+  }
+  .icone svg { width: 44px; height: 44px; }
+  .carte h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-weight: 700;
+  }
+  .carte p {
+    margin: 0;
+    color: var(--doux);
+    font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  }
+  .ouvrir {
+    margin-top: auto;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  @media (prefers-reduced-motion: reduce) { .carte { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Worklab</h1>
+    <p>Les apps de la classe, hébergées au collège.</p>
+  </header>
+  <ul class="apps">
+<!-- APPS -->
+  </ul>
+</main>
+</body>
+</html>
