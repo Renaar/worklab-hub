@@ -109,10 +109,10 @@ carte() {
   local i="$1" icone="hub/site/icones/${APP_ID[$1]}.svg"
   [[ -f "$icone" ]] || icone="hub/site/icones/defaut.svg"
   # Lien relatif (« plan/ » et non « /plan/ »). La couleur suit l'ordre de
-  # apps.conf (4 couleurs en boucle) : une app garde sa couleur partout.
+  # apps.conf (6 couleurs en boucle) : une app garde sa couleur partout.
   cat <<CARTE
       <li>
-        <a class="carte couleur-$(( i % 4 + 1 ))" href="$(html "${APP_CHEMIN[$i]#/}")">
+        <a class="carte couleur-$(( i % 6 + 1 ))" href="$(html "${APP_CHEMIN[$i]#/}")">
           <span class="icone" aria-hidden="true">$(tr -d '\n' < "$icone")</span>
           <h3>$(html "${APP_TITRE[$i]}")</h3>
           <p>$(html "${APP_DESCRIPTION[$i]}")</p>
@@ -172,8 +172,12 @@ for i in "${!APP_ID[@]}"; do
     [[ "$f" != /* && "$f" != *..* ]] || arret "$id : chemin interdit dans apps.conf : « $f »."
     source_f="sources/$id/$f"
     if [[ "$f" == */ ]]; then
+      # « public/ » : le contenu du dossier, à la racine du chemin de l'app
       [[ -d "$source_f" ]] || arret "$id : dossier « $f » introuvable dans le dépôt."
       cp -R "$source_f." "$cible"
+    elif [[ -d "$source_f" ]]; then
+      # « css » : le dossier lui-même, avec son nom (→ /mon-app/css/…)
+      cp -R "$source_f" "$cible"
     else
       [[ -f "$source_f" ]] || arret "$id : fichier « $f » introuvable dans le dépôt."
       cp "$source_f" "$cible"

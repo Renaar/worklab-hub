@@ -10,6 +10,8 @@ tout mettre à jour.
 | `http://172.16.0.17/plan/` | Plan de Classe |
 | `http://172.16.0.17/hasard/` | Heureux Hasard |
 | `http://172.16.0.17/dactylo/` | Turbo Dactylo |
+| `http://172.16.0.17/marble-run/` | Marble Run Gravity |
+| `http://172.16.0.17/spirographix/` | Spirographix |
 
 Tout tourne sur le serveur : aucune page ne charge quoi que ce soit depuis
 Internet. Le serveur a seulement besoin d'Internet pour récupérer les dépôts
@@ -24,6 +26,8 @@ Navigateur ──► :HUB_PORT (80)   conteneur « hub » (nginx:stable-alpine)
                  ├─ /           → page d'accueil du hub         (fichiers dans l'image)
                  ├─ /plan/      → Plan-De-Classe/index.html     (fichier copié dans l'image)
                  ├─ /hasard/    → Heureux-Hasard/public/        (fichiers copiés dans l'image)
+                 ├─ /marble-run/   → Marble-Run-Gravity : index.html, css/, js/
+                 ├─ /spirographix/ → Spirographix : index.html, spirographe.html
                  └─ /dactylo/   → conteneur « turbo-dactylo »:3000 (HTTP + WebSocket, préfixe retiré)
 ```
 
@@ -97,6 +101,10 @@ sous-chemin (`/mon-app/`) et un chemin absolu partirait à la racine du hub.
 3. Commiter, pousser, puis `sudo scripts/deploy.sh` sur le serveur.
 
 La carte apparaît sur l'accueil, dans sa catégorie, et les fichiers sont servis sous `/mon-app/`.
+
+Champ « fichiers » : `public/` (avec `/`) sert le **contenu** du dossier ;
+`css` (sans `/`) garde le **dossier** avec son nom. Exemple pour un jeu
+organisé en `index.html`, `css/` et `js/` : `index.html css js`.
 
 **App avec son propre serveur** (type `conteneur`), en plus de la ligne dans
 `apps.conf` (champ fichiers : `-`) :
