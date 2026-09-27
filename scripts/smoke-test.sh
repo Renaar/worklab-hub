@@ -70,13 +70,23 @@ reussi "Accueil : Cache-Control: no-cache"
 for i in "${!APP_ID[@]}"; do
   chemin="${APP_CHEMIN[$i]}"
   attendu "${APP_TITRE[$i]}" 200 "$chemin"
-  contient "<title>${APP_TITRE[$i]}</title>" \
-    || echec "$chemin ne contient pas <title>${APP_TITRE[$i]}</title>"
-  reussi "$chemin contient <title>${APP_TITRE[$i]}</title>"
+  if [[ "$TYPE" != text/html* ]] || ! contient "<title>"; then
+    echec "$chemin : pas une page HTML ($TYPE)"
+  fi
+  reussi "$chemin : page HTML"
   attendu "Redirection" 301 "${chemin%/}"
   [[ "$(entete Location)" == "$chemin" ]] \
     || echec "${chemin%/} redirige vers « $(entete Location) » au lieu de $chemin"
   reussi "${chemin%/} → Location: $chemin"
+done
+
+# Titres exacts des apps d'origine : on vérifie que chaque chemin sert
+# bien la bonne app (et pas, par exemple, la page d'accueil).
+for paire in "/plan/|Plan de Classe" "/hasard/|Heureux Hasard" "/dactylo/|Turbo Dactylo"; do
+  chemin="${paire%%|*}" titre="${paire#*|}"
+  requete "$chemin"
+  contient "<title>$titre</title>" || echec "$chemin ne contient pas <title>$titre</title>"
+  reussi "$chemin contient <title>$titre</title>"
 done
 
 # Propre à Turbo Dactylo (seule app à conteneur pour l'instant)

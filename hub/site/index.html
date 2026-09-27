@@ -27,6 +27,8 @@
     --a2: #c2410c; --a2-fond: #fdeee5;
     --a3: #0f7a55; --a3-fond: #e3f4ec;
     --a4: #7c3aed; --a4-fond: #f0e9fd;
+    --a5: #be185d; --a5-fond: #fce7f1;
+    --a6: #0e7490; --a6-fond: #e0f4f8;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -40,6 +42,8 @@
       --a2: #fb923c; --a2-fond: #4a2a18;
       --a3: #4ade9f; --a3-fond: #173d2f;
       --a4: #b794ff; --a4-fond: #33265a;
+      --a5: #f472b6; --a5-fond: #4a1d33;
+      --a6: #22d3ee; --a6-fond: #133a44;
     }
   }
 
@@ -116,10 +120,12 @@
     text-decoration: none;
     transition: transform .15s ease, border-color .15s ease;
   }
-  /* Couleur de chaque carte : classe couleur-1 à couleur-4 posée par deploy.sh */
+  /* Couleur de chaque carte : classe couleur-1 à couleur-6 posée par deploy.sh */
   .carte.couleur-2 { --accent: var(--a2); --accent-fond: var(--a2-fond); }
   .carte.couleur-3 { --accent: var(--a3); --accent-fond: var(--a3-fond); }
   .carte.couleur-4 { --accent: var(--a4); --accent-fond: var(--a4-fond); }
+  .carte.couleur-5 { --accent: var(--a5); --accent-fond: var(--a5-fond); }
+  .carte.couleur-6 { --accent: var(--a6); --accent-fond: var(--a6-fond); }
   .carte:hover { transform: translateY(-3px); border-color: var(--accent); }
   .carte:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
   .icone {
