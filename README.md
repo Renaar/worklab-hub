@@ -12,7 +12,7 @@ tout mettre à jour.
 | `http://172.16.0.17/dactylo/` | Turbo Dactylo |
 | `http://172.16.0.17/marble-run/` | Marble Run Gravity |
 | `http://172.16.0.17/spirographix/` | Spirographix |
-| `http://172.16.0.17/tetris/` | Tetris Sprint |
+| `http://172.16.0.17/tetris/` | Tetris Lab |
 
 Tout tourne sur le serveur : aucune page ne charge quoi que ce soit depuis
 Internet. Le serveur a seulement besoin d'Internet pour récupérer les dépôts
