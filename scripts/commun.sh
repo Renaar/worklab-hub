@@ -33,12 +33,16 @@ lire_env() {
   printf '%s' "$valeur"
 }
 
-# Charge apps.conf dans des tableaux indexés de la même façon :
-# APP_ID, APP_DEPOT, APP_REF, APP_TYPE, APP_FICHIERS, APP_CHEMIN,
-# APP_TITRE, APP_DESCRIPTION. S'arrête au premier défaut de format.
+# Charge apps.conf :
+# - CATEGORIES : les catégories, dans l'ordre d'affichage ;
+# - APP_ID, APP_DEPOT, APP_REF, APP_TYPE, APP_FICHIERS, APP_CHEMIN,
+#   APP_CATEGORIE, APP_TITRE, APP_DESCRIPTION : un tableau par champ,
+#   indexés de la même façon.
+# S'arrête au premier défaut de format.
 charger_apps() {
+  CATEGORIES=()
   APP_ID=() APP_DEPOT=() APP_REF=() APP_TYPE=() APP_FICHIERS=()
-  APP_CHEMIN=() APP_TITRE=() APP_DESCRIPTION=()
+  APP_CHEMIN=() APP_CATEGORIE=() APP_TITRE=() APP_DESCRIPTION=()
   [[ -f "$APPS_CONF" ]] || arret "Fichier introuvable : $APPS_CONF"
 
   local ligne n=0 champs
@@ -47,8 +51,20 @@ charger_apps() {
     ligne="${ligne%$'\r'}"
     [[ -z "${ligne//[[:space:]]/}" || "$ligne" =~ ^[[:space:]]*# ]] && continue
     IFS='|' read -r -a champs <<< "$ligne"
-    (( ${#champs[@]} == 8 )) \
-      || arret "apps.conf, ligne $n : 8 champs attendus, ${#champs[@]} trouvés."
+    if [[ "${champs[0]}" == categories ]]; then
+      (( ${#CATEGORIES[@]} == 0 )) || arret "apps.conf, ligne $n : une seule ligne « categories| » permise."
+      CATEGORIES=("${champs[@]:1}")
+      (( ${#CATEGORIES[@]} > 0 )) || arret "apps.conf, ligne $n : aucune catégorie."
+      continue
+    fi
+    (( ${#champs[@]} == 9 )) \
+      || arret "apps.conf, ligne $n : 9 champs attendus, ${#champs[@]} trouvés."
+    (( ${#CATEGORIES[@]} > 0 )) \
+      || arret "apps.conf, ligne $n : la ligne « categories| » doit venir avant les apps."
+    local c connue=''
+    for c in "${CATEGORIES[@]}"; do [[ "$c" == "${champs[6]}" ]] && connue=1; done
+    [[ -n "$connue" ]] \
+      || arret "apps.conf, ligne $n : catégorie « ${champs[6]} » inconnue (voir la ligne « categories| »)."
     [[ "${champs[0]}" =~ ^[a-z0-9-]+$ ]] \
       || arret "apps.conf, ligne $n : id « ${champs[0]} » invalide (a-z, 0-9, -)."
     [[ "${champs[3]}" == statique || "${champs[3]}" == conteneur ]] \
@@ -61,8 +77,9 @@ charger_apps() {
     APP_TYPE+=("${champs[3]}")
     APP_FICHIERS+=("${champs[4]}")
     APP_CHEMIN+=("${champs[5]}")
-    APP_TITRE+=("${champs[6]}")
-    APP_DESCRIPTION+=("${champs[7]}")
+    APP_CATEGORIE+=("${champs[6]}")
+    APP_TITRE+=("${champs[7]}")
+    APP_DESCRIPTION+=("${champs[8]}")
   done < "$APPS_CONF"
   (( ${#APP_ID[@]} > 0 )) || arret "apps.conf ne contient aucune app."
 }

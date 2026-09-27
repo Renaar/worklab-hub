@@ -1,9 +1,10 @@
 <!doctype html>
 <!--
   Modèle de la page d'accueil du hub.
-  deploy.sh remplace la ligne « APPS » ci-dessous par une carte par app de
-  apps.conf (titre, description, icône de hub/site/icones/<id>.svg). Ne pas
-  écrire la liste des apps ici : elle serait en double.
+  deploy.sh remplace la ligne « APPS » ci-dessous par une section par
+  catégorie de apps.conf, avec une carte par app (titre, description, icône
+  de hub/site/icones/<id>.svg). Ne pas écrire la liste des apps ici : elle
+  serait en double.
 -->
 <html lang="fr">
 <head>
@@ -58,7 +59,7 @@
     margin: 0 auto;
     padding: clamp(24px, 6vw, 72px) 16px 48px;
   }
-  header { margin-bottom: clamp(24px, 4vw, 48px); }
+  header { margin-bottom: clamp(16px, 3vw, 32px); }
   h1 {
     margin: 0;
     font-size: clamp(2.4rem, 6vw, 4rem);
@@ -69,6 +70,25 @@
     margin: .25rem 0 0;
     color: var(--doux);
     font-size: clamp(1.1rem, 2vw, 1.35rem);
+  }
+
+  /* Catégories : un titre, puis les cartes (ou « Bientôt disponible ») */
+  .categorie { margin-top: clamp(28px, 4vw, 48px); }
+  .categorie > h2 {
+    margin: 0 0 clamp(12px, 1.8vw, 20px);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--bord);
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+    font-weight: 700;
+  }
+  .bientot {
+    margin: 0;
+    padding: clamp(16px, 2vw, 24px);
+    border: 2px dashed var(--bord);
+    border-radius: 16px;
+    color: var(--doux);
+    font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+    text-align: center;
   }
 
   /* Cartes : une colonne sur téléphone, 2 ou 3 sur PC et beamer */
@@ -96,9 +116,10 @@
     text-decoration: none;
     transition: transform .15s ease, border-color .15s ease;
   }
-  .apps li:nth-child(4n+2) .carte { --accent: var(--a2); --accent-fond: var(--a2-fond); }
-  .apps li:nth-child(4n+3) .carte { --accent: var(--a3); --accent-fond: var(--a3-fond); }
-  .apps li:nth-child(4n+4) .carte { --accent: var(--a4); --accent-fond: var(--a4-fond); }
+  /* Couleur de chaque carte : classe couleur-1 à couleur-4 posée par deploy.sh */
+  .carte.couleur-2 { --accent: var(--a2); --accent-fond: var(--a2-fond); }
+  .carte.couleur-3 { --accent: var(--a3); --accent-fond: var(--a3-fond); }
+  .carte.couleur-4 { --accent: var(--a4); --accent-fond: var(--a4-fond); }
   .carte:hover { transform: translateY(-3px); border-color: var(--accent); }
   .carte:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
   .icone {
@@ -111,7 +132,7 @@
     color: var(--accent);
   }
   .icone svg { width: 44px; height: 44px; }
-  .carte h2 {
+  .carte h3 {
     margin: 0;
     font-size: clamp(1.5rem, 2.4vw, 1.9rem);
     font-weight: 700;
@@ -136,9 +157,7 @@
     <h1>Worklab</h1>
     <p>Les apps de la classe, hébergées au collège.</p>
   </header>
-  <ul class="apps">
 <!-- APPS -->
-  </ul>
 </main>
 </body>
 </html>

@@ -56,7 +56,11 @@ for i in "${!APP_ID[@]}"; do
   contient "${APP_TITRE[$i]//&/&amp;}" \
     || echec "Accueil : carte « ${APP_TITRE[$i]} » absente"
 done
-nb_cartes="$(grep -c 'class="carte"' "$TMP/corps" || true)"
+for c in "${CATEGORIES[@]}"; do
+  contient "<h2>${c//&/&amp;}</h2>" || echec "Accueil : catégorie « $c » absente"
+done
+reussi "Accueil : ${#CATEGORIES[@]} catégories"
+nb_cartes="$(grep -c 'class="carte ' "$TMP/corps" || true)"
 [[ "$nb_cartes" == "${#APP_ID[@]}" ]] \
   || echec "Accueil : $nb_cartes carte(s), ${#APP_ID[@]} attendue(s)"
 reussi "Accueil : ${#APP_ID[@]} cartes"
