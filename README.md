@@ -43,7 +43,7 @@ Navigateur ──► :HUB_PORT (80)   conteneur « hub » (nginx:stable-alpine)
 
 ```
 worklab-hub/
-├── apps.conf                  la liste des apps : la seule source de vérité
+├── apps.conf                  les catégories et la liste des apps : la seule source de vérité
 ├── docker-compose.yml         la stack : services hub et turbo-dactylo
 ├── .env.example               modèle du fichier .env (port, PIN)
 ├── hub/
@@ -90,13 +90,13 @@ sous-chemin (`/mon-app/`) et un chemin absolu partirait à la racine du hub.
 
 1. Ajouter une ligne dans `apps.conf` (le format est expliqué en tête du fichier) :
    ```
-   mon-app|https://github.com/Renaar/Mon-App.git|main|statique|public/|/mon-app/|Mon App|Ce que fait mon app en une phrase.
+   mon-app|https://github.com/Renaar/Mon-App.git|main|statique|public/|/mon-app/|Jeux|Mon App|Ce que fait mon app en une phrase.
    ```
 2. Facultatif : ajouter une icône `hub/site/icones/mon-app.svg` (SVG avec
    `stroke="currentColor"` pour prendre la couleur de la carte).
 3. Commiter, pousser, puis `sudo scripts/deploy.sh` sur le serveur.
 
-La carte apparaît sur l'accueil et les fichiers sont servis sous `/mon-app/`.
+La carte apparaît sur l'accueil, dans sa catégorie, et les fichiers sont servis sous `/mon-app/`.
 
 **App avec son propre serveur** (type `conteneur`), en plus de la ligne dans
 `apps.conf` (champ fichiers : `-`) :
@@ -105,6 +105,24 @@ La carte apparaît sur l'accueil et les fichiers sont servis sous `/mon-app/`.
    `build: ./sources/<id>` (copier le modèle de `turbo-dactylo`) ;
 2. une route dans `hub/nginx.conf` (copier le bloc `/dactylo/` : variable
    dans `proxy_pass` et `rewrite … break`).
+
+## Catégories de l'accueil
+
+L'accueil range les cartes par catégorie : aujourd'hui **Outils**,
+**Activités Ludiques** et **Jeux**. Elles sont déclarées en tête de
+`apps.conf`, dans l'ordre d'affichage :
+
+```
+categories|Outils|Activités Ludiques|Jeux
+```
+
+- **Changer la catégorie d'une app** : modifier son 7e champ dans `apps.conf`.
+- **Ajouter, renommer ou réordonner** une catégorie : modifier cette ligne
+  (et le champ des apps concernées, écrit à l'identique).
+- Une catégorie **sans app** reste affichée avec « Bientôt disponible ».
+
+`deploy.sh` s'arrête avec un message clair si une app vise une catégorie
+qui n'existe pas (faute de frappe, accent oublié…).
 
 ## Figer une version d'app
 

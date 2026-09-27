@@ -108,34 +108,57 @@ html() {
 carte() {
   local i="$1" icone="hub/site/icones/${APP_ID[$1]}.svg"
   [[ -f "$icone" ]] || icone="hub/site/icones/defaut.svg"
-  # Lien relatif (« plan/ » et non « /plan/ »)
+  # Lien relatif (« plan/ » et non « /plan/ »). La couleur suit l'ordre de
+  # apps.conf (4 couleurs en boucle) : une app garde sa couleur partout.
   cat <<CARTE
-    <li>
-      <a class="carte" href="$(html "${APP_CHEMIN[$i]#/}")">
-        <span class="icone" aria-hidden="true">$(tr -d '\n' < "$icone")</span>
-        <h2>$(html "${APP_TITRE[$i]}")</h2>
-        <p>$(html "${APP_DESCRIPTION[$i]}")</p>
-        <span class="ouvrir">Ouvrir →</span>
-      </a>
-    </li>
+      <li>
+        <a class="carte couleur-$(( i % 4 + 1 ))" href="$(html "${APP_CHEMIN[$i]#/}")">
+          <span class="icone" aria-hidden="true">$(tr -d '\n' < "$icone")</span>
+          <h3>$(html "${APP_TITRE[$i]}")</h3>
+          <p>$(html "${APP_DESCRIPTION[$i]}")</p>
+          <span class="ouvrir">Ouvrir →</span>
+        </a>
+      </li>
 CARTE
+}
+
+# Une section par catégorie, dans l'ordre de apps.conf, avec ses cartes.
+# Une catégorie sans app reste affichée, avec « Bientôt disponible ».
+categories_html() {
+  local categorie i n
+  for categorie in "${CATEGORIES[@]}"; do
+    echo "  <section class=\"categorie\">"
+    echo "    <h2>$(html "$categorie")</h2>"
+    n=0
+    for i in "${!APP_ID[@]}"; do
+      [[ "${APP_CATEGORIE[$i]}" == "$categorie" ]] || continue
+      (( n++ == 0 )) && echo '    <ul class="apps">'
+      carte "$i"
+    done
+    if (( n > 0 )); then
+      echo '    </ul>'
+    else
+      echo '    <p class="bientot">Bientôt disponible</p>'
+    fi
+    echo '  </section>'
+  done
 }
 
 # On repart d'un dossier vide à chaque fois : aucun fichier ancien ne traîne.
 rm -rf hub/build
 mkdir -p hub/build/site
 
-# Page d'accueil : le modèle, avec les cartes à la place du repère APPS
+# Page d'accueil : le modèle, avec les catégories à la place du repère APPS
 while IFS= read -r ligne || [[ -n "$ligne" ]]; do
   if [[ "$ligne" == '<!-- APPS -->' ]]; then
-    for i in "${!APP_ID[@]}"; do carte "$i"; done
+    categories_html
   else
     printf '%s\n' "$ligne"
   fi
 done < hub/site/index.html > hub/build/site/index.html
-grep -q 'class="carte"' hub/build/site/index.html \
+grep -q 'class="carte ' hub/build/site/index.html \
   || arret "Repère <!-- APPS --> introuvable dans hub/site/index.html."
-ok "page d'accueil : ${#APP_ID[@]} app(s)"
+ok "page d'accueil : ${#APP_ID[@]} app(s) dans ${#CATEGORIES[@]} catégorie(s)"
 
 # Apps statiques : seuls les fichiers listés dans apps.conf sont copiés
 for i in "${!APP_ID[@]}"; do
