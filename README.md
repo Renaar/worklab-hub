@@ -12,6 +12,7 @@ tout mettre à jour.
 | `http://172.16.0.17/dactylo/` | Turbo Dactylo |
 | `http://172.16.0.17/marble-run/` | Marble Run Gravity |
 | `http://172.16.0.17/spirographix/` | Spirographix |
+| `http://172.16.0.17/tetris/` | Tetris Lab |
 
 Tout tourne sur le serveur : aucune page ne charge quoi que ce soit depuis
 Internet. Le serveur a seulement besoin d'Internet pour récupérer les dépôts
@@ -28,6 +29,7 @@ Navigateur ──► :HUB_PORT (80)   conteneur « hub » (nginx:stable-alpine)
                  ├─ /hasard/    → Heureux-Hasard/public/        (fichiers copiés dans l'image)
                  ├─ /marble-run/   → Marble-Run-Gravity : index.html, css/, js/
                  ├─ /spirographix/ → Spirographix : index.html, spirographe.html
+                 ├─ /tetris/       → Tetris/public/
                  └─ /dactylo/   → conteneur « turbo-dactylo »:3000 (HTTP + WebSocket, préfixe retiré)
 ```
 
