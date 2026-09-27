@@ -192,13 +192,16 @@ done
 # un lien cliquable vers un site externe reste permis.
 # On cherche les adresses http(s):// (hors espaces de noms SVG « w3.org ») et
 # les adresses « //hôte » dans src, href et url().
-externes="$( { grep -rhoE "https?://[^\"'\`) <>]+" hub/build/site sources/*/public \
+# Seuls les fichiers qui peuvent charger une ressource sont examinés (pas les
+# textes de licence, qui citent souvent une adresse web).
+filtre=(--include='*.html' --include='*.htm' --include='*.css' --include='*.js' --include='*.svg')
+externes="$( { grep -rhoE "${filtre[@]}" "https?://[^\"'\`) <>]+" hub/build/site sources/*/public \
                  | grep -v '^https\?://www\.w3\.org/'
-               grep -rhoE "(src|href)=[\"']//[^\"']+|url\([\"']?//[^)]+" hub/build/site sources/*/public
+               grep -rhoE "${filtre[@]}" "(src|href)=[\"']//[^\"']+|url\([\"']?//[^)]+" hub/build/site sources/*/public
              } 2>/dev/null | sort -u || true)"
 if [[ -n "$externes" ]]; then
   alerte "Références externes trouvées dans les fichiers servis :"
-  printf '      %s\n' "$externes"
+  while IFS= read -r adresse; do info "   $adresse"; done <<< "$externes"
 else
   ok "aucune ressource externe dans les fichiers servis"
 fi
